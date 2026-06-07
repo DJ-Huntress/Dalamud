@@ -144,12 +144,26 @@ internal class ReliableFileStorage : IInternalDisposableService
                         Path = normalizedPath,
                         Data = bytes,
                     };
-                    this.db.Insert(file);
+                    try
+                    {
+                        this.db.Insert(file);
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Error($"Failed to save file to VFS: {e}");
+                    }
                 }
                 else
                 {
                     file.Data = bytes;
-                    this.db.Update(file);
+                    try
+                    {
+                        this.db.Update(file);
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Error($"Failed to save file to VFS: {e}");
+                    }
                 }
 
                 FilesystemUtil.WriteAllBytesSafe(path, bytes);
